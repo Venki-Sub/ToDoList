@@ -7,7 +7,7 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
-		BindingContext = new ViewModels.MainPageViewModel();
+		BindingContext = new MainPageViewModel();
 	}
 
 	protected override async void OnAppearing()

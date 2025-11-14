@@ -74,5 +74,18 @@ namespace ToDoList.ViewModels
                 Debug.WriteLine("Failed to load item");
             }
         }
+
+        [RelayCommand]
+        private async Task GoBack()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+            catch
+            {
+                // ignore navigation errors
+            }
+        }
     }
 }

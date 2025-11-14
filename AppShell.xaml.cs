@@ -9,5 +9,6 @@ public partial class AppShell : Shell
 		// Register routes for navigation
 		Routing.RegisterRoute(nameof(ToDoItemPage), typeof(ToDoItemPage));
 		Routing.RegisterRoute(nameof(ToDoDetailPage), typeof(ToDoDetailPage));
+		Routing.RegisterRoute(nameof(NewToDoPage), typeof(NewToDoPage));
 	}
 }

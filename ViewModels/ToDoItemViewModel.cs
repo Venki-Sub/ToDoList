@@ -49,6 +49,28 @@ namespace ToDoList.ViewModels
                 await Shell.Current.GoToAsync($"{nameof(ToDoDetailPage)}?{nameof(ToDoDetailViewModel.ItemId)}={tappedItem.IdToDoItem}");
             }
         }
+
+        [RelayCommand]
+        private async Task NavigateToNew()
+        {
+            // Try to resolve the page via DI so the viewmodel is injected into the page constructor.
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(NewToDoPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"NavigateToNew navigation failed: {ex.Message}");
+                try
+                {
+                    await Shell.Current.DisplayAlertAsync("Navigation Error", "Unable to open New To-Do page.", "OK");
+                }
+                catch
+                {
+                    // ignore if even alerting fails
+                }
+            }
+        }
       
     }
 }

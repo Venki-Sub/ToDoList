@@ -8,19 +8,6 @@ namespace ToDoList.Views
         {
             InitializeComponent();
             BindingContext = viewModel;
-            
-        }
-
-        private async void OnBackClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                await Shell.Current.GoToAsync("..");
-            }
-            catch
-            {
-                // ignore navigation errors
-            }
         }
     }
 }

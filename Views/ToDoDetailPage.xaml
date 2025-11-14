@@ -23,7 +23,7 @@
     <VerticalStackLayout Padding="16" Spacing="12">
         <!-- Header with back -->
         <Grid ColumnDefinitions="Auto, *" VerticalOptions="Start">
-            <Button Text="←" BackgroundColor="Transparent" FontSize="18" Clicked="OnBackClicked" />
+            <Button Text="←" BackgroundColor="Transparent" FontSize="18" Command="{Binding GoBackCommand}" />
             <Label Text="Task Details" Grid.Column="1" VerticalOptions="Center" Style="{StaticResource HeaderTitle}" />
         </Grid>
 

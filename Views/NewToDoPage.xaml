@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToDoList.Views.NewToDoPage"
+             Title="New Task"
+             BackgroundColor="#F3F6FA">
+
+  <ContentPage.Resources>
+    <Style TargetType="Entry" x:Key="InputEntry">
+      <Setter Property="BackgroundColor" Value="White" />
+      <Setter Property="HeightRequest" Value="44" />
+      <Setter Property="Margin" Value="0,6" />
+      <Setter Property="PlaceholderColor" Value="#9A9A9A" />
+    </Style>
+    <Style TargetType="Button" x:Key="PrimaryBtn">
+      <Setter Property="BackgroundColor" Value="#4A90E2" />
+      <Setter Property="TextColor" Value="White" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="12,10" />
+    </Style>
+  </ContentPage.Resources>
+
+  <VerticalStackLayout Padding="16" Spacing="12">
+    <Label Text="Create Task" FontSize="20" FontAttributes="Bold" TextColor="#111" />
+
+    <Entry Style="{StaticResource InputEntry}" Placeholder="Task name" Text="{Binding TaskName}" />
+    <Editor HeightRequest="120" BackgroundColor="White" Margin="0,6" Text="{Binding Description}" Placeholder="Description (optional)" />
+
+    <Entry Style="{StaticResource InputEntry}" Placeholder="Notes (optional)" Text="{Binding Notes}" />
+
+    <HorizontalStackLayout Spacing="10">
+      <DatePicker Date="{Binding DueDate}" HorizontalOptions="StartAndExpand" />
+      <Picker Title="Priority" SelectedItem="{Binding Priority}" HorizontalOptions="End" WidthRequest="140">
+        <Picker.ItemsSource>
+          <x:Array Type="x:String">
+            <x:String>Low</x:String>
+            <x:String>Medium</x:String>
+            <x:String>High</x:String>
+          </x:Array>
+        </Picker.ItemsSource>
+      </Picker>
+    </HorizontalStackLayout>
+
+    <Picker Title="Category" SelectedItem="{Binding Category}" WidthRequest="200">
+      <Picker.ItemsSource>
+        <x:Array Type="x:String">
+          <x:String>General</x:String>
+          <x:String>Work</x:String>
+          <x:String>Personal</x:String>
+          <x:String>Shopping</x:String>
+          <x:String>Health</x:String>
+        </x:Array>
+      </Picker.ItemsSource>
+    </Picker>
+
+    <HorizontalStackLayout Spacing="10">
+      <DatePicker Date="{Binding DueDate}" HorizontalOptions="StartAndExpand" />
+      <Picker Title="Priority" SelectedItem="{Binding Priority}" HorizontalOptions="End" WidthRequest="140">
+        <Picker.ItemsSource>
+          <x:Array Type="x:String">
+            <x:String>Low</x:String>
+            <x:String>Medium</x:String>
+            <x:String>High</x:String>
+          </x:Array>
+        </Picker.ItemsSource>
+      </Picker>
+    </HorizontalStackLayout>
+
+    <HorizontalStackLayout VerticalOptions="Center" Spacing="8">
+      <Label Text="Completed" VerticalOptions="Center" />
+      <Switch IsToggled="{Binding IsCompleted}" />
+    </HorizontalStackLayout>
+
+    <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+      <Button Text="Cancel" BackgroundColor="#F0F0F0" TextColor="#333" Command="{Binding CancelCommand}" />
+      <Button Text="Save" Style="{StaticResource PrimaryBtn}" Command="{Binding SaveCommand}" />
+    </HorizontalStackLayout>
+  </VerticalStackLayout>
+
+</ContentPage>

@@ -5,7 +5,8 @@ namespace ToDoList.Views
         public ToDoItemPage( ToDoItemViewModel viewModel )
         {
             InitializeComponent();
-            BindingContext = viewModel; // ViewModel for the To-Do list
+            BindingContext = viewModel; 
+            // ViewModel for the To-Do list
         }
     }
 }

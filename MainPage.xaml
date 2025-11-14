@@ -2,8 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                          x:Class="ToDoList.MainPage"
-                         Shell.NavBarIsVisible="False"
-                         BackgroundColor="#FFF8F3">
+                         Shell.NavBarIsVisible="False">
+
+    <ContentPage.Background>
+        <StaticResourceExtension Key="AppGradientBrush" />
+    </ContentPage.Background>
 
     <ContentPage.Resources>
         <Style TargetType="Label" x:Key="TitleLabelStyle">
@@ -39,23 +42,17 @@
         <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
             <VerticalStackLayout Spacing="18">
                 <!-- Hero card -->
-                <Border x:Name="HeroCard" Padding="18">
+                    <Border x:Name="HeroCard" Padding="18" Background="{StaticResource CardSurfaceBrush}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#FF8A65" Offset="0.0" />
-                            <GradientStop Color="#FF7043" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{Binding DailyQuote}" FontSize="20" TextColor="White" LineBreakMode="TailTruncation" />
-                        <Label Text="{Binding QuoteAuthor}" FontSize="14" TextColor="#FFECE6" HorizontalOptions="End" />
-                        <HorizontalStackLayout Spacing="12" HorizontalOptions="End">
-                            <Button x:Name="CtaButton" Text="Open To‑Do" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding NavigateToDoCommand}" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="{Binding DailyQuote}" Style="{StaticResource HeadlineLarge}" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding QuoteAuthor}" FontSize="14" TextColor="{StaticResource WhiteBrush}" Opacity="0.8" HorizontalOptions="End" />
+                            <HorizontalStackLayout Spacing="12" HorizontalOptions="End">
+                                <Button x:Name="CtaButton" Text="Open To‑Do" Style="{StaticResource PrimaryCTA}" Command="{Binding NavigateToDoCommand}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
                 </Border>
 
                 <!-- Quick actions -->
