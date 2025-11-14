@@ -1,0 +1,72 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToDoList.Views.ToDoDetailPage"
+             Title="To-Do Details" BackgroundColor="#F5F5F5">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <!-- Page Title -->
+            <Border Background="#4CAF50" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15" />
+                </Border.StrokeShape>
+                <Label Text="To-Do Details" FontSize="28" TextColor="White" HorizontalOptions="Center" />
+            </Border>
+
+            <!-- Task Name -->
+            <Border Background="#FFC107" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout>
+                    <Label Text="Task Name" FontSize="16" TextColor="Black" />
+                    <Label Text="{Binding TaskName}" FontSize="20" TextColor="#212121" FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Description -->
+            <Border Background="#03A9F4" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout>
+                    <Label Text="Description" FontSize="16" TextColor="White" />
+                    <Label Text="{Binding Description}" FontSize="18" TextColor="#E3F2FD" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Is Completed -->
+            <Border Background="#8BC34A" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout>
+                    <Label Text="Is Completed?" FontSize="16" TextColor="Black" />
+                    <Label Text="{Binding IsCompleted, Converter={StaticResource BoolToYesNoConverter}}"
+                           FontSize="18" TextColor="White" FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Due Date -->
+            <Border Background="#FF5722" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout>
+                    <Label Text="Due Date" FontSize="16" TextColor="White" />
+                    <Label Text="{Binding DueDate, StringFormat='{}{0:MM/dd/yyyy}'}" FontSize="18" TextColor="#FFCCBC" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Priority -->
+            <Border Background="#9C27B0" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout>
+                    <Label Text="Priority" FontSize="16" TextColor="White" />
+                    <Label Text="{Binding Priority}" FontSize="18" TextColor="#E1BEE7" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

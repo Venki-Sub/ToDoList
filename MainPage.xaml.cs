@@ -1,23 +1,37 @@
-﻿namespace ToDoList;
+﻿
+
+namespace ToDoList;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
-
 	public MainPage()
 	{
 		InitializeComponent();
+		BindingContext = new ViewModels.MainPageViewModel();
 	}
 
-	private void OnCounterClicked(object? sender, EventArgs e)
+	protected override async void OnAppearing()
 	{
-		count++;
+		base.OnAppearing();
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+		try
+		{
+			// initial states
+			HeroCard.Opacity = 0;
+			HeroCard.TranslationY = 30;
+			CtaButton.Scale = 0.9;
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
+			// entrance animations (use non-obsolete async methods)
+			await Task.WhenAll(
+				HeroCard.FadeToAsync(1, 420, Easing.CubicOut),
+				HeroCard.TranslateToAsync(0, 0, 420, Easing.CubicOut)
+			);
+
+			await CtaButton.ScaleToAsync(1, 280, Easing.SpringOut);
+		}
+		catch
+		{
+			// ignore animation errors on unsupported platforms
+		}
 	}
 }
