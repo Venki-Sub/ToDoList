@@ -29,24 +29,31 @@ namespace ToDoList.ViewModels
         private string priority;
 
 
-    private readonly IitemStore<TodoItem> itemStore;
+        private readonly IitemStore<TodoItem> itemStore;
 
         public ToDoDetailViewModel(IitemStore<TodoItem> itemStore)
         {
             this.itemStore = itemStore;
         }
 
-         partial void OnItemIdChanged(string? value)
+        partial void OnItemIdChanged(string? value)
         {
             if (!string.IsNullOrEmpty(value) && int.TryParse(value, out int itemId))
             {
-                LoadItemId(itemId).ConfigureAwait(false); // Pass the parsed int
+                // Fire-and-forget the async loader so the property change doesn't block the UI thread.
+                _ = LoadItemId(itemId);
             }
             else
             {
                 Debug.WriteLine("Invalid ItemId provided");
             }
         }
+        /// <summary>
+        /// Loads a TodoItem from the store based on the provided itemId.
+        /// If the item is found, it will update the corresponding properties of this view model.
+        /// If the item is not found, it will write a debug message indicating the failure.
+        /// </summary>
+        /// <param name="itemId">The id of the item to load.</param>
         private async Task LoadItemId(int itemId)
         {
             try
