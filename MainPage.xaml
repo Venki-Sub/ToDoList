@@ -48,7 +48,7 @@
                     </Border.StrokeShape>
                         <VerticalStackLayout Spacing="12">
                             <Label Text="{Binding DailyQuote}" Style="{StaticResource HeadlineLarge}" LineBreakMode="TailTruncation" />
-                            <Label Text="{Binding QuoteAuthor}" FontSize="14" TextColor="{StaticResource WhiteBrush}" Opacity="0.8" HorizontalOptions="End" />
+                            <Label Text="{Binding QuoteAuthor}" FontSize="14" TextColor="{StaticResource White}" Opacity="0.8" HorizontalOptions="End" />
                             <HorizontalStackLayout Spacing="12" HorizontalOptions="End">
                                 <Button x:Name="CtaButton" Text="Open To‑Do" Style="{StaticResource PrimaryCTA}" Command="{Binding NavigateToDoCommand}" />
                             </HorizontalStackLayout>

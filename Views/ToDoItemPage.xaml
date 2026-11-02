@@ -12,7 +12,7 @@
     <ContentPage.Resources>
         <!-- Make most labels on this page use white on the dark gradient background -->
         <Style TargetType="Label">
-            <Setter Property="TextColor" Value="{StaticResource WhiteBrush}" />
+            <Setter Property="TextColor" Value="{StaticResource White}" />
         </Style>
     </ContentPage.Resources>
 
@@ -20,7 +20,7 @@
         <Grid Padding="20" RowDefinitions="Auto, * , Auto">
             <!-- Header / Date -->
             <VerticalStackLayout Grid.Row="0" Spacing="6">
-                <Label Text="2019" FontSize="20" TextColor="{StaticResource WhiteBrush}" Opacity="0.9" />
+                <Label Text="2019" FontSize="20" TextColor="{StaticResource White}" Opacity="0.9" />
                 <Label Text="April 8th" FontSize="28" Style="{StaticResource HeadlineLarge}" />
             </VerticalStackLayout>
 
@@ -37,14 +37,14 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8" />
                                     </Border.StrokeShape>
-                                    <Label Text="📘" FontSize="20" TextColor="{StaticResource WhiteBrush}" />
+                                    <Label Text="📘" FontSize="20" TextColor="{StaticResource White}" />
                                 </Border>
                                 <VerticalStackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand">
                                     <Label Text="{Binding ItemName}" Style="{StaticResource TaskTitle}" />
-                                    <Label Text="{Binding Description}" FontSize="12" TextColor="{StaticResource WhiteBrush}" Opacity="0.8" />
+                                    <Label Text="{Binding Description}" FontSize="12" TextColor="{StaticResource White}" Opacity="0.8" />
                                 </VerticalStackLayout>
                                 <VerticalStackLayout HorizontalOptions="End" VerticalOptions="Center">
-                                    <Label Text="{Binding DueDate, StringFormat='{}{0:MM/dd/yyyy}'}" FontSize="12" TextColor="{StaticResource WhiteBrush}" Opacity="0.7" />
+                                    <Label Text="{Binding DueDate, StringFormat='{}{0:MM/dd/yyyy}'}" FontSize="12" TextColor="{StaticResource White}" Opacity="0.7" />
                                     <CheckBox IsChecked="{Binding IsCompleted}" />
                                 </VerticalStackLayout>
                             </HorizontalStackLayout>

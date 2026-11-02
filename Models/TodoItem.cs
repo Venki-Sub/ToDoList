@@ -6,8 +6,9 @@ public class TodoItem
         public int IdToDoItem { get; set; } 
 
         // The Item name
-        public string ItemName { get; set; }
-        public string Description { get; set; }
+        public string ItemName { get; set; } = string.Empty; //required
+        
+        public string? Description { get; set; } // optional 
 
         // Whether the task is completed
         public bool IsCompleted { get; set; }
