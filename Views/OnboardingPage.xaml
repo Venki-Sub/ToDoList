@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ToDoList.ViewModels"
+             x:Class="ToDoList.Views.OnboardingPage"
+             x:DataType="vm:OnboardingViewModel"
+             Background="{StaticResource OnboardingGradient}"
+             Title="Welcome">
+
+    <Grid RowDefinitions="*,Auto,Auto,*,Auto" Padding="28,24,28,40" MaximumWidthRequest="520">
+
+        <!-- ===== Illustration (Fluent Emoji pieces) ===== -->
+        <Grid x:Name="Illustration" Grid.Row="0" WidthRequest="320" HeightRequest="320" VerticalOptions="End" Margin="0,0,0,24">
+            <!-- soft floor shadow -->
+            <Ellipse Fill="#14000000" WidthRequest="250" HeightRequest="26" VerticalOptions="End" Margin="0,0,0,6" />
+            <!-- faded calendar in the back -->
+            <Image Source="fe_calendar.png" WidthRequest="92" HeightRequest="92" Opacity="0.28"
+                   HorizontalOptions="Start" VerticalOptions="Start" Margin="0,18,0,0" Rotation="-8" />
+            <!-- big stopwatch -->
+            <Image Source="fe_stopwatch.png" WidthRequest="230" HeightRequest="230"
+                   HorizontalOptions="Center" VerticalOptions="Center" Margin="0,0,0,24" />
+            <!-- flying papers -->
+            <Image Source="fe_page.png" WidthRequest="38" HeightRequest="38" Opacity="0.75" Rotation="-25"
+                   HorizontalOptions="Start" VerticalOptions="End" Margin="34,0,0,64" />
+            <Image Source="fe_page.png" WidthRequest="30" HeightRequest="30" Opacity="0.6" Rotation="18"
+                   HorizontalOptions="Start" VerticalOptions="End" Margin="84,0,0,20" />
+            <Image Source="fe_page.png" WidthRequest="34" HeightRequest="34" Opacity="0.7" Rotation="32"
+                   HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,6,40" />
+            <!-- runner in a hurry -->
+            <Image x:Name="Runner" Source="fe_running.png" WidthRequest="170" HeightRequest="170"
+                   HorizontalOptions="End" VerticalOptions="End" Margin="0,0,10,10" />
+        </Grid>
+
+        <!-- ===== Text ===== -->
+        <Label Grid.Row="1" Text="GET ORGANIZED WITH YOUR TIME" FontFamily="Exo2SemiBold" FontSize="24"
+               HorizontalTextAlignment="Center" CharacterSpacing="0.3" Margin="0,8,0,14" />
+        <Label Grid.Row="2" HorizontalTextAlignment="Center" FontFamily="Exo2Medium" FontSize="16"
+               TextColor="{StaticResource InkSoft}" LineHeight="1.35" MaximumWidthRequest="360"
+               Text="ToDoList is a simple and effective to-do list and task manager app which helps you manage your time" />
+
+        <!-- ===== CTA ===== -->
+        <!-- Border clips the gradient button to rounded corners on every platform -->
+        <Border Grid.Row="4" StrokeShape="RoundRectangle 12">
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.3" Radius="14" Offset="0,6" />
+            </Border.Shadow>
+            <Button Text="Get Started" Style="{StaticResource GradientButton}" Command="{Binding GetStartedCommand}" />
+        </Border>
+    </Grid>
+</ContentPage>

@@ -1,16 +1,24 @@
 # ToDoList
 
-A to-do list app built with **.NET MAUI** (.NET 10) using the MVVM pattern, with a blue/purple theme.
+A to-do list app built with **.NET MAUI** (.NET 10) using the MVVM pattern, with a soft pastel design (lavender/sage gradients, neumorphic cards, flat illustrations).
 
 ## Features
 
-- **Home page** – greeting, daily quote and a button to open your tasks
-- **Task list** – all tasks with description and due date
-- **Task details** – full view of a single task (description, priority, notes, completed state)
-- **New task** – create a task with name, description, due date and priority
+- **Welcome screen** – illustration + "Get Started" (shown on first launch only)
+- **Home** – greeting with avatar, **Pinned** tasks carousel, two-week date strip, the selected day's tasks with illustrations, floating **+** button, menu (all tasks, new task, change your name)
+- **Your Activities (details)** – big illustration, live **"Starting in 00 : 05 : 05"** countdown (tap to mark done), priority/category, notes and **Activity History**; ••• menu to edit, pin, complete or delete
+- **New / Edit task** – illustration picker, name (inline validation), description, date (quick Today / Tomorrow / Next week), start & end time, priority, category, notes, pin to home
+- **All tasks** – All / Active / Done filter, tap the circle to complete
 
-> Tasks are stored in memory (`MockItemStore`) with 10 sample tasks, so changes are lost when the app closes.
-> The Edit and Delete buttons on the details page are not wired up yet.
+> Tasks are stored in memory (`MockItemStore`) with sample tasks, so changes are lost when the app closes.
+
+## Credits (free / open-source assets)
+
+| Asset | Source | License |
+|---|---|---|
+| Illustrations (`Resources/Images/fe_*.svg`) | [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) by Microsoft | MIT |
+| Font: Exo 2 | [Google Fonts](https://fonts.google.com/specimen/Exo+2) | SIL Open Font License 1.1 |
+| Icons: Material Icons Round | [Google Material Design Icons](https://github.com/google/material-design-icons) | Apache 2.0 |
 
 ## Tech stack
 
@@ -26,10 +34,10 @@ A to-do list app built with **.NET MAUI** (.NET 10) using the MVVM pattern, with
 
 ```
 ToDoList/
-├── Models/           TodoItem
+├── Models/           TodoItem, ActivityEntry, ChipOption, DayOption
 ├── Services/         IitemStore<T> + MockItemStore (in-memory data)
 ├── ViewModels/       BaseViewModel, MainPage, ToDoItem, ToDoDetail, NewToDo
-├── Views/            ToDoItemPage, ToDoDetailPage, NewToDoPage
+├── Views/            OnboardingPage, ToDoItemPage, ToDoDetailPage, NewToDoPage
 ├── Resources/Styles/ Colors.xaml, Styles.xaml (app theme)
 ├── MainPage.xaml     Home page
 ├── AppShell.xaml     Shell + route registration

@@ -1,100 +1,204 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                         x:Class="ToDoList.MainPage"
-                         Shell.NavBarIsVisible="False">
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ToDoList.ViewModels"
+             xmlns:model="clr-namespace:ToDoList.Models"
+             x:Class="ToDoList.MainPage"
+             x:DataType="vm:MainPageViewModel"
+             Title="Home">
 
-    <ContentPage.Background>
-        <StaticResourceExtension Key="AppGradientBrush" />
-    </ContentPage.Background>
+    <Grid>
+        <ScrollView>
+            <Grid>
+                <!-- ===== Curved gradient header (behind the content) ===== -->
+                <Path Fill="{StaticResource HeaderGradient}" Aspect="Fill" HeightRequest="400" VerticalOptions="Start"
+                      Data="M0,0 L100,0 L100,100 C72,68 28,68 0,100 Z" />
 
-    <ContentPage.Resources>
-        <Style TargetType="Label" x:Key="TitleLabelStyle">
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="TextColor" Value="#2D2D2D" />
-        </Style>
-        <Style TargetType="Button" x:Key="PrimaryButtonStyle">
-            <Setter Property="BackgroundColor" Value="#FF7043" />
-            <Setter Property="TextColor" Value="White" />
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="Padding" Value="12,10" />
-        </Style>
-    </ContentPage.Resources>
+                <VerticalStackLayout Padding="24,18,24,120" Spacing="0" MaximumWidthRequest="560">
 
-    <Grid RowDefinitions="Auto, *" Padding="20">
-        <!-- Top bar -->
-        <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Fill" VerticalOptions="Center" Padding="4">
-            <VerticalStackLayout HorizontalOptions="StartAndExpand">
-                <Label Text="Hello Buddy!" Style="{StaticResource TitleLabelStyle}" />
-                <Label Text="Organize your day, one task at a time" FontSize="12" TextColor="#6B6B6B" />
-            </VerticalStackLayout>
-            <Border Padding="6" Background="#FFFFFF" HorizontalOptions="End">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="18" />
-                </Border.StrokeShape>
-                <Label Text="SF" FontAttributes="Bold" TextColor="#FF7043" />
-            </Border>
-        </HorizontalStackLayout>
+                    <!-- hamburger -->
+                    <Label Text="&#xe5d2;" Style="{StaticResource Icon}" FontSize="32" HorizontalOptions="Start"
+                           Padding="0,4,12,4" SemanticProperties.Description="Menu">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MenuCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
 
-        <!-- Content -->
-        <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-            <VerticalStackLayout Spacing="18">
-                <!-- Hero card -->
-                    <Border x:Name="HeroCard" Padding="18" Background="{StaticResource CardSurfaceBrush}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="20" />
-                    </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="12">
-                            <Label Text="{Binding DailyQuote}" Style="{StaticResource HeadlineLarge}" LineBreakMode="TailTruncation" />
-                            <Label Text="{Binding QuoteAuthor}" FontSize="14" TextColor="{StaticResource White}" Opacity="0.8" HorizontalOptions="End" />
-                            <HorizontalStackLayout Spacing="12" HorizontalOptions="End">
-                                <Button x:Name="CtaButton" Text="Open To‑Do" Style="{StaticResource PrimaryCTA}" Command="{Binding NavigateToDoCommand}" />
+                    <!-- greeting + avatar -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,22,0,0">
+                        <VerticalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label FontFamily="Exo2Bold" FontSize="25">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Hello " />
+                                        <Span Text="{Binding UserName}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="{Binding Subtitle}" FontFamily="Exo2Medium" FontSize="16" VerticalOptions="Center" />
+                                <Image Source="fe_wave.png" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
-                </Border>
 
-                <!-- Quick actions -->
-                <HorizontalStackLayout Spacing="12" HorizontalOptions="FillAndExpand">
-                    <Border Padding="12" Background="#FFFFFF" HorizontalOptions="FillAndExpand">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
-                        </Border.StrokeShape>
-                        <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
-                            <Label Text="🗒️" FontSize="22" />
-                            <VerticalStackLayout>
-                                <Label Text="My Tasks" FontAttributes="Bold" />
-                                <Label Text="Open your to-do lists" FontSize="12" TextColor="#7A7A7A" />
-                            </VerticalStackLayout>
-                            <Button Text="Open" Command="{Binding NavigateToDoCommand}" Style="{StaticResource PrimaryButtonStyle}" HorizontalOptions="EndAndExpand" />
+                        <Border Grid.Column="1" WidthRequest="68" HeightRequest="68" StrokeShape="RoundRectangle 34"
+                                BackgroundColor="#F6D46B" StrokeThickness="3" Stroke="{StaticResource OutlineBrush}">
+                            <Image Source="fe_avatar.png" WidthRequest="50" HeightRequest="50" Margin="0,8,0,0" />
+                        </Border>
+                    </Grid>
+
+                    <!-- ===== Pinned ===== -->
+                    <VerticalStackLayout IsVisible="{Binding HasPinned}" Margin="0,26,0,0">
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="Pinned" Style="{StaticResource SectionTitle}" />
+                            <Label Text="&#xe7cd;" Style="{StaticResource Icon}" FontSize="28">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsPinnedExpanded}" Value="False">
+                                        <Setter Property="Rotation" Value="-90" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TogglePinnedCommand}" />
+                            </HorizontalStackLayout.GestureRecognizers>
                         </HorizontalStackLayout>
-                    </Border>
 
-                    <Border Padding="12" Background="#FFFFFF" HorizontalOptions="FillAndExpand">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
-                        </Border.StrokeShape>
-                        <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
-                            <Label Text="✨" FontSize="22" />
-                            <VerticalStackLayout>
-                                <Label Text="Daily Quotes" FontAttributes="Bold" />
-                                <Label Text="Inspire yourself every day" FontSize="12" TextColor="#7A7A7A" />
-                            </VerticalStackLayout>
-                            <Button Text="View" HorizontalOptions="EndAndExpand" />
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never"
+                                    IsVisible="{Binding IsPinnedExpanded}" Margin="-24,0">
+                            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding PinnedTasks}" Spacing="20" Padding="24,18,24,24">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="model:TodoItem">
+                                        <Border WidthRequest="178" HeightRequest="228" StrokeShape="RoundRectangle 18" Padding="12"
+                                                BackgroundColor="{Binding Tint}">
+                                            <Border.Shadow>
+                                                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.25" Radius="16" Offset="0,8" />
+                                            </Border.Shadow>
+                                            <Grid RowDefinitions="*,Auto,Auto" RowSpacing="4">
+                                                <Image Source="{Binding Icon}" WidthRequest="110" HeightRequest="110" VerticalOptions="Center" />
+                                                <Label Grid.Row="1" Text="{Binding ItemName}" Style="{StaticResource CardTitle}"
+                                                       HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" />
+                                                <Label Grid.Row="2" Text="{Binding TimeText}" Style="{StaticResource CardSub}"
+                                                       HorizontalTextAlignment="Center" Margin="0,0,0,8" />
+                                            </Grid>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=OpenTaskCommand, x:DataType=vm:MainPageViewModel}" />
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </VerticalStackLayout>
+
+                    <!-- ===== Date strip ===== -->
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="-24,10,-24,0">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Days}" Spacing="14" Padding="24,8,24,18">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="model:DayOption">
+                                    <Border WidthRequest="64" HeightRequest="74" StrokeShape="RoundRectangle 10"
+                                            BackgroundColor="{StaticResource Surface}">
+                                        <Border.Shadow>
+                                            <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.16" Radius="10" Offset="0,4" />
+                                        </Border.Shadow>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Sky}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <VerticalStackLayout VerticalOptions="Center" Spacing="0">
+                                            <Label Text="{Binding DayName}" FontFamily="Exo2Medium" FontSize="15"
+                                                   TextColor="{StaticResource InkSoft}" HorizontalOptions="Center" />
+                                            <Label Text="{Binding DayNumber}" FontFamily="Exo2Bold" FontSize="21" HorizontalOptions="Center" />
+                                            <!-- dot = day has tasks (kept in layout so numbers stay aligned) -->
+                                            <Ellipse WidthRequest="5" HeightRequest="5" Fill="{StaticResource SlateBrush}" Opacity="0"
+                                                     HorizontalOptions="Center" Margin="0,2,0,0">
+                                                <Ellipse.Triggers>
+                                                    <DataTrigger TargetType="Ellipse" Binding="{Binding HasTasks}" Value="True">
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                    </DataTrigger>
+                                                </Ellipse.Triggers>
+                                            </Ellipse>
+                                        </VerticalStackLayout>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=SelectDayCommand, x:DataType=vm:MainPageViewModel}" />
+                                        </Border.GestureRecognizers>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
-                    </Border>
-                </HorizontalStackLayout>
+                    </ScrollView>
 
-                <!-- Spacer / tips -->
-                <Border Padding="12" Background="#FFFFFF">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Label Text="Tip: Tap 'Open To‑Do' to manage tasks. Add, complete, and organize with ease." FontSize="13" TextColor="#6B6B6B" />
-                </Border>
-            </VerticalStackLayout>
+                    <!-- ===== All Task ===== -->
+                    <HorizontalStackLayout Spacing="8" Margin="0,14,0,16">
+                        <Label Text="{Binding DayTitle}" Style="{StaticResource SectionTitle}" />
+                        <Label Text="&#xe873;" Style="{StaticResource Icon}" FontSize="24" />
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAllTasksCommand}" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                    </HorizontalStackLayout>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding DayTasks}" Spacing="18">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="model:TodoItem">
+                                <Border Style="{StaticResource StripeCard}" BackgroundColor="{Binding Tint}" HeightRequest="104">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                            <Setter Property="Opacity" Value="0.55" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Grid ColumnDefinitions="5,*,Auto">
+                                        <BoxView Color="{StaticResource Slate}" />
+                                        <VerticalStackLayout Grid.Column="1" Padding="20,0" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="{Binding ItemName}" Style="{StaticResource CardTitle}" LineBreakMode="TailTruncation">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding TimeText}" Style="{StaticResource CardSub}" />
+                                        </VerticalStackLayout>
+                                        <Image Grid.Column="2" Source="{Binding Icon}" WidthRequest="68" HeightRequest="68"
+                                               Margin="0,0,24,0" VerticalOptions="Center" />
+                                    </Grid>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=OpenTaskCommand, x:DataType=vm:MainPageViewModel}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- empty day -->
+                    <Border Style="{StaticResource SoftCard}" Padding="20,26">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding HasDayTasks}" Value="True">
+                                <Setter Property="IsVisible" Value="False" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="8">
+                            <Image Source="fe_party.png" WidthRequest="56" HeightRequest="56" />
+                            <Label Text="Nothing planned" Style="{StaticResource CardTitle}" HorizontalOptions="Center" />
+                            <Label Text="Tap + to add a task for this day." Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
         </ScrollView>
-    </Grid>
 
+        <!-- ===== Floating add button ===== -->
+        <Border WidthRequest="62" HeightRequest="62" StrokeShape="RoundRectangle 31" Background="{StaticResource CtaGradient}"
+                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,24,28" SemanticProperties.Description="Add task">
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.4" Radius="16" Offset="0,8" />
+            </Border.Shadow>
+            <Label Text="&#xe145;" Style="{StaticResource Icon}" FontSize="32" TextColor="White" HorizontalOptions="Center" />
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding AddTaskCommand}" />
+            </Border.GestureRecognizers>
+        </Border>
+    </Grid>
 </ContentPage>

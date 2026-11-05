@@ -1,76 +1,122 @@
-
-
-
-
-
 namespace ToDoList.ViewModels
 {
     public partial class ToDoItemViewModel : BaseViewModel
     {
-      
+        public const string FilterAll = "All";
+        public const string FilterActive = "Active";
+        public const string FilterDone = "Done";
 
-    private readonly IitemStore<TodoItem> itemStore;
+        private readonly IitemStore<TodoItem> itemStore;
+        private List<TodoItem> allItems = new();
 
-    public ObservableCollection<TodoItem> ToDoItems { get; } = new();
+        public ToDoItemViewModel(IitemStore<TodoItem> itemStore) : base("My Tasks")
+        {
+            this.itemStore = itemStore;
+        }
 
-    public ToDoItemViewModel(IitemStore<TodoItem> itemStore) //, INavigationService navigation)
-        : base("Ma ToDoList")
-    {
-        this.itemStore = itemStore;
-          _ = LoadToDoItems();
-    }
+        public ObservableCollection<TodoItem> ToDoItems { get; } = new();
 
-         // Load To-Do items from the store
+        [ObservableProperty] private string filter = FilterAll;
+        [ObservableProperty] private string todayText = DateTime.Today.ToString("dddd, MMMM d");
+        [ObservableProperty] private int allCount;
+        [ObservableProperty] private int activeCount;
+        [ObservableProperty] private int doneCount;
+        [ObservableProperty] private string emptyTitle = string.Empty;
+        [ObservableProperty] private string emptyMessage = string.Empty;
+
+        // Load To-Do items from the store
         [RelayCommand]
         private async Task LoadToDoItems()
         {
+            if (IsBusy) return;
             try
             {
-                var items = await this.itemStore.GetItemsAsync();
-                ToDoItems.Clear();
-                foreach (var item in items)
-                {
-                    ToDoItems.Add(item);
-                }
+                IsBusy = true;
+                TodayText = DateTime.Today.ToString("dddd, MMMM d");
+                allItems = (await itemStore.GetItemsAsync()).ToList();
+                ApplyFilter();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error loading items: {ex.Message}");
             }
-            
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
-         [RelayCommand]
-        private async Task NavigateToDetail(TodoItem tappedItem)
+        partial void OnFilterChanged(string value) => ApplyFilter();
+
+        private void ApplyFilter()
         {
-            if (tappedItem != null)
+            AllCount = allItems.Count;
+            DoneCount = allItems.Count(i => i.IsCompleted);
+            ActiveCount = AllCount - DoneCount;
+
+            IEnumerable<TodoItem> query = Filter switch
             {
-               //Pass the ID of the tapped item to the detail page
-                await Shell.Current.GoToAsync($"{nameof(ToDoDetailPage)}?{nameof(ToDoDetailViewModel.ItemId)}={tappedItem.IdToDoItem}");
+                FilterActive => allItems.Where(i => !i.IsCompleted),
+                FilterDone => allItems.Where(i => i.IsCompleted),
+                _ => allItems
+            };
+
+            // Open tasks first, then by date and start time.
+            var sorted = query
+                .OrderBy(i => i.IsCompleted)
+                .ThenBy(i => i.StartsAt ?? DateTime.MaxValue)
+                .ToList();
+
+            ToDoItems.Clear();
+            foreach (var item in sorted)
+            {
+                ToDoItems.Add(item);
             }
+
+            (EmptyTitle, EmptyMessage) = Filter switch
+            {
+                FilterActive => ("All caught up 🎉", "You have no open tasks. Enjoy your day!"),
+                FilterDone => ("Nothing finished yet", "Tap the circle on a task to complete it."),
+                _ => ("No tasks yet", "Tap + to add your first task.")
+            };
+        }
+
+        [RelayCommand]
+        private void SetFilter(string? value) => Filter = value ?? FilterAll;
+
+        [RelayCommand]
+        private async Task ToggleComplete(TodoItem? item)
+        {
+            if (item is null) return;
+            item.IsCompleted = !item.IsCompleted;
+            item.AddHistory(item.IsCompleted ? "Marked as completed" : "Marked as not done");
+            await itemStore.UpdateItemAsync(item);
+            ApplyFilter();
+        }
+
+        [RelayCommand]
+        private Task NavigateToDetail(TodoItem? tappedItem)
+        {
+            if (tappedItem is null) return Task.CompletedTask;
+            // Pass the ID of the tapped item to the detail page
+            return NavigateAsync($"{nameof(ToDoDetailPage)}?{nameof(ToDoDetailViewModel.ItemId)}={tappedItem.IdToDoItem}");
         }
 
         [RelayCommand]
         private async Task NavigateToNew()
         {
-            // Try to resolve the page via DI so the viewmodel is injected into the page constructor.
             try
             {
-                await Shell.Current.GoToAsync(nameof(NewToDoPage));
+                await NavigateAsync(nameof(NewToDoPage));
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"NavigateToNew navigation failed: {ex.Message}");
-                try
-                {
-                    await Shell.Current.DisplayAlertAsync("Navigation Error", "Unable to open New To-Do page.", "OK");
-                }
-                catch
-                {
-                    // ignore if even alerting fails
-                }
+                await AlertAsync("Navigation error", "Unable to open the New Task page.");
             }
         }
-      
+
+        [RelayCommand]
+        private Task GoBack() => GoBackAsync();
     }
 }

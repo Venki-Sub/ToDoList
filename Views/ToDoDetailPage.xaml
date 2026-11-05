@@ -1,84 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                         x:Class="ToDoList.Views.ToDoDetailPage"
-                         Title="Task Details"
-                         BackgroundColor="#F3F6FA">
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ToDoList.ViewModels"
+             xmlns:model="clr-namespace:ToDoList.Models"
+             x:Class="ToDoList.Views.ToDoDetailPage"
+             x:DataType="vm:ToDoDetailViewModel"
+             Title="Your Activities">
 
-    <ContentPage.Resources>
-        <Style TargetType="Label" x:Key="HeaderTitle">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="TextColor" Value="#222" />
-        </Style>
-        <Style TargetType="Label" x:Key="SubtleText">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="TextColor" Value="#6B6B6B" />
-        </Style>
-        <Style TargetType="Button" x:Key="ActionButton">
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="12,8" />
-        </Style>
-    </ContentPage.Resources>
+    <ScrollView>
+        <Grid>
+            <!-- ===== Curved gradient header ===== -->
+            <Path Fill="{StaticResource HeaderGradient}" Aspect="Fill" HeightRequest="330" VerticalOptions="Start"
+                  Data="M0,0 L100,0 L100,88 C80,74 40,72 0,100 Z" />
 
-    <VerticalStackLayout Padding="16" Spacing="12">
-        <!-- Header with back -->
-        <Grid ColumnDefinitions="Auto, *" VerticalOptions="Start">
-            <Button Text="←" BackgroundColor="Transparent" FontSize="18" Command="{Binding GoBackCommand}" />
-            <Label Text="Task Details" Grid.Column="1" VerticalOptions="Center" Style="{StaticResource HeaderTitle}" />
-        </Grid>
+            <VerticalStackLayout Padding="24,18,24,40" MaximumWidthRequest="560">
 
-        <ScrollView>
-            <VerticalStackLayout Spacing="14">
-                <!-- Card -->
-                <Border Background="#FFFFFF" Padding="16" Margin="0,6" >
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="14" />
-                    </Border.StrokeShape>
+                <!-- back + more -->
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Label Text="&#xe5c4;" Style="{StaticResource Icon}" FontSize="30" Padding="0,6,12,6"
+                           SemanticProperties.Description="Back">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Grid.Column="2" Text="&#xeae1;" Style="{StaticResource Icon}" FontSize="30" Padding="12,6,0,6"
+                           SemanticProperties.Description="More actions">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MoreCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
 
-                    <VerticalStackLayout Spacing="12">
-                        <!-- Title -->
-                        <Label Text="{Binding TaskName}" FontSize="22" FontAttributes="Bold" TextColor="#111" LineBreakMode="TailTruncation" />
+                <Label Text="Your Activities" Style="{StaticResource ScreenTitle}" HorizontalOptions="Center" Margin="0,16,0,26" />
 
-                        <!-- Meta row: priority, due date, completed -->
-                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                            <Border Background="#EEF6FF" Padding="6,4">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Label Text="{Binding Priority}" FontSize="12" TextColor="#2B6CB0" />
-                            </Border>
-
-                            <Border Background="#FFF7E6" Padding="6,4">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Label Text="{Binding DueDate, StringFormat='{}{0:MMM d, yyyy}'}" FontSize="12" TextColor="#E65100" />
-                            </Border>
-
-                            <HorizontalStackLayout HorizontalOptions="EndAndExpand" Spacing="8" VerticalOptions="Center">
-                                <Label Text="Completed" Style="{StaticResource SubtleText}" VerticalOptions="Center" />
-                                <Switch IsToggled="{Binding IsCompleted}" />
-                            </HorizontalStackLayout>
-                        </HorizontalStackLayout>
-
-                        <BoxView HeightRequest="1" BackgroundColor="#F0F0F0" />
-
-                        <!-- Description -->
-                        <Label Text="Description" FontAttributes="Bold" FontSize="14" />
-                        <Label Text="{Binding Description}" FontSize="16" TextColor="#333" />
-
-                        <!-- Actions -->
-                        <HorizontalStackLayout Spacing="10" HorizontalOptions="End" Padding="0,6,0,0">
-                            <Button Text="Edit" BackgroundColor="#4A90E2" TextColor="White" Style="{StaticResource ActionButton}" />
-                            <Button Text="Delete" BackgroundColor="#F8F8F8" TextColor="#D32F2F" Style="{StaticResource ActionButton}" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
+                <!-- big illustration card -->
+                <Border BackgroundColor="{Binding Item.Tint}" StrokeShape="RoundRectangle 6" HeightRequest="250" Margin="8,0">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.25" Radius="18" Offset="0,8" />
+                    </Border.Shadow>
+                    <Grid>
+                        <Image Source="{Binding Item.Icon}" WidthRequest="170" HeightRequest="170" />
+                        <!-- pinned badge -->
+                        <Label Text="&#xf10d;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}"
+                               HorizontalOptions="End" VerticalOptions="Start" Margin="0,14,14,0" Rotation="30"
+                               IsVisible="{Binding Item.IsPinned}" />
+                    </Grid>
                 </Border>
 
-                <!-- Tip / Footer -->
-                <Label Text="Tip: Use Edit to change the task or toggle Completed when finished." Style="{StaticResource SubtleText}" />
-            </VerticalStackLayout>
-        </ScrollView>
-    </VerticalStackLayout>
+                <!-- title + time -->
+                <Label Text="{Binding Item.ItemName}" Style="{StaticResource ScreenTitle}" FontSize="30"
+                       HorizontalTextAlignment="Center" Margin="0,24,0,4">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding Item.IsCompleted}" Value="True">
+                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Label HorizontalOptions="Center" FontFamily="Exo2Medium" FontSize="18">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="{Binding Item.DueText}" />
+                            <Span Text="  ·  " TextColor="{StaticResource InkMuted}" />
+                            <Span Text="{Binding Item.TimeText}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label Text="{Binding Item.Description}" Style="{StaticResource Body}" HorizontalTextAlignment="Center"
+                       Margin="12,12,12,0" IsVisible="{Binding Item.HasDescription}" />
 
+                <!-- countdown card -->
+                <Border Style="{StaticResource StripeCard}" BackgroundColor="{StaticResource Cream}" HeightRequest="96" Margin="0,24,0,0">
+                    <Grid ColumnDefinitions="5,*,Auto">
+                        <BoxView Color="{StaticResource Slate}" />
+                        <VerticalStackLayout Grid.Column="1" Padding="22,0" Spacing="2" VerticalOptions="Center">
+                            <Label Text="{Binding CountdownLabel}" FontFamily="Exo2Medium" FontSize="16" />
+                            <Label Text="{Binding CountdownText}" FontFamily="Exo2Bold" FontSize="25" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Text="&#xe5c8;" Style="{StaticResource Icon}" FontSize="34" Margin="0,0,22,0">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding Item.IsCompleted}" Value="True">
+                                    <Setter Property="Text" Value="&#xe86c;" />
+                                    <Setter Property="TextColor" Value="{StaticResource Success}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleCompleteCommand}" />
+                    </Border.GestureRecognizers>
+                </Border>
+                <Label Text="Tap the card to mark this activity as done" Style="{StaticResource Caption}"
+                       TextColor="{StaticResource InkMuted}" HorizontalOptions="Center" Margin="0,10,0,0" />
+
+                <!-- details chips -->
+                <HorizontalStackLayout Spacing="10" Margin="0,22,0,0" HorizontalOptions="Center">
+                    <Border Style="{StaticResource Chip}" Padding="14,8">
+                        <HorizontalStackLayout Spacing="8">
+                            <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{StaticResource SlateBrush}">
+                                <Ellipse.Triggers>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding Item.Priority}" Value="High">
+                                        <Setter Property="Fill" Value="{StaticResource DangerBrush}" />
+                                    </DataTrigger>
+                                </Ellipse.Triggers>
+                            </Ellipse>
+                            <Label Style="{StaticResource ChipText}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding Item.Priority}" />
+                                        <Span Text=" priority" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </Border>
+                    <Border Style="{StaticResource Chip}" Padding="14,8">
+                        <Label Text="{Binding Item.Category}" Style="{StaticResource ChipText}" />
+                    </Border>
+                </HorizontalStackLayout>
+
+                <!-- notes -->
+                <Border Style="{StaticResource SoftCard}" Margin="0,22,0,0" IsVisible="{Binding Item.HasNotes}">
+                    <HorizontalStackLayout Spacing="12">
+                        <Label Text="&#xe873;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}" VerticalOptions="Start" />
+                        <Label Text="{Binding Item.Notes}" Style="{StaticResource Body}" TextColor="{StaticResource Ink}" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- ===== Activity History ===== -->
+                <HorizontalStackLayout Spacing="10" Margin="0,30,0,14">
+                    <Label Text="Activity History" Style="{StaticResource SectionTitle}" />
+                    <Label Text="&#xe7cd;" Style="{StaticResource Icon}" FontSize="28">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsHistoryExpanded}" Value="False">
+                                <Setter Property="Rotation" Value="-90" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleHistoryCommand}" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding History}" Spacing="14" IsVisible="{Binding IsHistoryExpanded}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="model:ActivityEntry">
+                            <Border BackgroundColor="{StaticResource HistoryBg}" StrokeShape="RoundRectangle 8" Padding="20,16">
+                                <Border.Shadow>
+                                    <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.12" Radius="8" Offset="0,3" />
+                                </Border.Shadow>
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="6">
+                                    <Label Text="{Binding DateText}" FontFamily="Exo2Bold" FontSize="15" />
+                                    <Label Grid.Column="1" Text="{Binding TimeText}" FontFamily="Exo2Bold" FontSize="14" />
+                                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" FontFamily="Exo2Medium" FontSize="15"
+                                           TextColor="{StaticResource InkSoft}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

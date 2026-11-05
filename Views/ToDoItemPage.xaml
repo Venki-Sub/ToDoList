@@ -1,65 +1,184 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ToDoList.Views.ToDoItemPage"
-             xmlns:viewmodel="clr-namespace:ToDoList.ViewModels" 
+             xmlns:vm="clr-namespace:ToDoList.ViewModels"
              xmlns:model="clr-namespace:ToDoList.Models"
-             Title="To-Do List">
-
-    <ContentPage.Background>
-        <StaticResourceExtension Key="AppGradientBrush" />
-    </ContentPage.Background>
+             x:Class="ToDoList.Views.ToDoItemPage"
+             x:DataType="vm:ToDoItemViewModel"
+             Title="All Tasks">
 
     <ContentPage.Resources>
-        <!-- Make most labels on this page use white on the dark gradient background -->
-        <Style TargetType="Label">
-            <Setter Property="TextColor" Value="{StaticResource White}" />
+        <Style x:Key="FilterChip" TargetType="Border" BasedOn="{StaticResource Chip}">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HeightRequest" Value="46" />
         </Style>
     </ContentPage.Resources>
 
-    <ContentPage.Content>
-        <Grid Padding="20" RowDefinitions="Auto, * , Auto">
-            <!-- Header / Date -->
-            <VerticalStackLayout Grid.Row="0" Spacing="6">
-                <Label Text="2019" FontSize="20" TextColor="{StaticResource White}" Opacity="0.9" />
-                <Label Text="April 8th" FontSize="28" Style="{StaticResource HeadlineLarge}" />
-            </VerticalStackLayout>
+    <Grid>
+        <!-- ===== Curved gradient header ===== -->
+        <Path Fill="{StaticResource HeaderGradient}" Aspect="Fill" HeightRequest="230" VerticalOptions="Start"
+              Data="M0,0 L100,0 L100,88 C80,74 40,72 0,100 Z" />
 
-            <!-- Task list -->
-            <CollectionView Grid.Row="1" ItemsSource="{Binding ToDoItems}" Margin="0,14,0,14">
+        <Grid RowDefinitions="Auto,Auto,*" Padding="24,18,24,0" RowSpacing="20" MaximumWidthRequest="560">
+
+            <!-- back + title -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Label Text="&#xe5c4;" Style="{StaticResource Icon}" FontSize="30" Padding="0,6,12,6"
+                       SemanticProperties.Description="Back">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="All Tasks" Style="{StaticResource ScreenTitle}" FontSize="26" HorizontalOptions="Center" />
+                    <Label Text="{Binding TodayText}" FontFamily="Exo2Medium" FontSize="14" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+                <BoxView Grid.Column="2" WidthRequest="42" Color="Transparent" />
+            </Grid>
+
+            <!-- filter -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="14" Margin="0,18,0,0">
+                <Border Style="{StaticResource FilterChip}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding Filter}" Value="All">
+                            <Setter Property="BackgroundColor" Value="{StaticResource Sky}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Label Style="{StaticResource ChipText}" HorizontalOptions="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="All  " />
+                                <Span Text="{Binding AllCount}" TextColor="{StaticResource InkSoft}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetFilterCommand}" CommandParameter="All" />
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource FilterChip}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding Filter}" Value="Active">
+                            <Setter Property="BackgroundColor" Value="{StaticResource Sky}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Label Style="{StaticResource ChipText}" HorizontalOptions="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Active  " />
+                                <Span Text="{Binding ActiveCount}" TextColor="{StaticResource InkSoft}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetFilterCommand}" CommandParameter="Active" />
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource FilterChip}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding Filter}" Value="Done">
+                            <Setter Property="BackgroundColor" Value="{StaticResource Sky}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Label Style="{StaticResource ChipText}" HorizontalOptions="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Done  " />
+                                <Span Text="{Binding DoneCount}" TextColor="{StaticResource InkSoft}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetFilterCommand}" CommandParameter="Done" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </Grid>
+
+            <!-- list -->
+            <CollectionView Grid.Row="2" ItemsSource="{Binding ToDoItems}" SelectionMode="None" Margin="-8,0">
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="110" Color="Transparent" />
+                </CollectionView.Footer>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="24,60" Spacing="8" HorizontalOptions="Center">
+                        <Image Source="fe_party.png" WidthRequest="64" HeightRequest="64" />
+                        <Label Text="{Binding EmptyTitle}" Style="{StaticResource CardTitle}" HorizontalOptions="Center" />
+                        <Label Text="{Binding EmptyMessage}" Style="{StaticResource Caption}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TodoItem">
-                        <Border Style="{StaticResource TaskCardStyle}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="14" />
-                            </Border.StrokeShape>
-                            <HorizontalStackLayout Padding="10" Spacing="12" VerticalOptions="Center">
-                                <Border Padding="8" Background="{StaticResource CardSurfaceBrush}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="8" />
-                                    </Border.StrokeShape>
-                                    <Label Text="📘" FontSize="20" TextColor="{StaticResource White}" />
-                                </Border>
-                                <VerticalStackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand">
-                                    <Label Text="{Binding ItemName}" Style="{StaticResource TaskTitle}" />
-                                    <Label Text="{Binding Description}" FontSize="12" TextColor="{StaticResource White}" Opacity="0.8" />
-                                </VerticalStackLayout>
-                                <VerticalStackLayout HorizontalOptions="End" VerticalOptions="Center">
-                                    <Label Text="{Binding DueDate, StringFormat='{}{0:MM/dd/yyyy}'}" FontSize="12" TextColor="{StaticResource White}" Opacity="0.7" />
-                                    <CheckBox IsChecked="{Binding IsCompleted}" />
-                                </VerticalStackLayout>
-                            </HorizontalStackLayout>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateToDetailCommand}" CommandParameter="{Binding .}" NumberOfTapsRequired="1" />
-                            </Border.GestureRecognizers>
-                        </Border>
+                        <!-- outer padding leaves room for the shadow -->
+                        <Grid Padding="8,0,8,18">
+                            <Border Style="{StaticResource StripeCard}" BackgroundColor="{Binding Tint}" HeightRequest="104">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="Opacity" Value="0.55" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Grid ColumnDefinitions="5,52,*,Auto">
+                                    <BoxView Color="{StaticResource Slate}" />
+
+                                    <!-- complete toggle -->
+                                    <Grid Grid.Column="1" BackgroundColor="Transparent" SemanticProperties.Description="Toggle complete">
+                                        <Label Text="&#xe836;" Style="{StaticResource Icon}" FontSize="28" TextColor="{StaticResource Slate}" HorizontalOptions="Center">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                                    <Setter Property="Text" Value="&#xe86c;" />
+                                                    <Setter Property="TextColor" Value="{StaticResource Success}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ToDoItemViewModel}}, Path=ToggleCompleteCommand, x:DataType=vm:ToDoItemViewModel}" />
+                                        </Grid.GestureRecognizers>
+                                    </Grid>
+
+                                    <Grid Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" BackgroundColor="Transparent">
+                                        <VerticalStackLayout Spacing="6" VerticalOptions="Center">
+                                            <Label Text="{Binding ItemName}" Style="{StaticResource CardTitle}" LineBreakMode="TailTruncation">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding DateTimeText}" Style="{StaticResource CardSub}" FontSize="14">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsOverdue}" Value="True">
+                                                        <Setter Property="TextColor" Value="{StaticResource Danger}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        <Image Grid.Column="1" Source="{Binding Icon}" WidthRequest="64" HeightRequest="64"
+                                               Margin="10,0,22,0" VerticalOptions="Center" />
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ToDoItemViewModel}}, Path=NavigateToDetailCommand, x:DataType=vm:ToDoItemViewModel}" />
+                                        </Grid.GestureRecognizers>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <!-- Bottom Add CTA -->
-            <HorizontalStackLayout Grid.Row="2" Padding="0,8,0,0">
-                <Button Text="ADD NEW TASK" Style="{StaticResource PrimaryCTA}" Command="{Binding NavigateToNewCommand}" HorizontalOptions="FillAndExpand" />
-            </HorizontalStackLayout>
         </Grid>
-    </ContentPage.Content>
+
+        <!-- ===== Floating add button ===== -->
+        <Border WidthRequest="62" HeightRequest="62" StrokeShape="RoundRectangle 31" Background="{StaticResource CtaGradient}"
+                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,24,28" SemanticProperties.Description="Add task">
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.4" Radius="16" Offset="0,8" />
+            </Border.Shadow>
+            <Label Text="&#xe145;" Style="{StaticResource Icon}" FontSize="32" TextColor="White" HorizontalOptions="Center" />
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding NavigateToNewCommand}" />
+            </Border.GestureRecognizers>
+        </Border>
+    </Grid>
 </ContentPage>

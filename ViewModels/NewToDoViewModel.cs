@@ -1,104 +1,196 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
 namespace ToDoList.ViewModels;
 
+/// <summary>
+/// Backs the Create / Edit task page.
+/// ?ItemId=n edits an existing task, ?Date=yyyy-MM-dd pre-selects a day for a new one.
+/// </summary>
+[QueryProperty(nameof(ItemId), nameof(ItemId))]
+[QueryProperty(nameof(Date), nameof(Date))]
 public partial class NewToDoViewModel : BaseViewModel
 {
     private readonly IitemStore<TodoItem> itemStore;
+    private TodoItem? editing;
 
     public NewToDoViewModel(IitemStore<TodoItem> itemStore) : base("New Task")
     {
         this.itemStore = itemStore;
-        DueDate = DateTime.Now.Date;
-        Priority = "Medium";
+
+        PriorityOptions =
+        [
+            new ChipOption(TodoItem.PriorityLow, accent: Color.FromArgb("#4CAF7A")),
+            new ChipOption(TodoItem.PriorityMedium, accent: Color.FromArgb("#E9A23B")),
+            new ChipOption(TodoItem.PriorityHigh, accent: Color.FromArgb("#E05A5A"))
+        ];
+
+        CategoryOptions = new(Categories.All.Select(c => new ChipOption(c)));
+
+        IconOptions = new(TaskIcons.All.Select(i => new ChipOption(i, i, TaskIcons.TintFor(i))));
+
+        // Default slot: next full hour, one hour long.
+        var next = DateTime.Now.AddHours(1);
+        StartTime = new TimeSpan(next.Hour, 0, 0);
+        EndTime = new TimeSpan((next.Hour + 1) % 24, 0, 0);
+
+        SyncChips();
     }
 
-    [ObservableProperty]
-    private string taskName = string.Empty;
+    public ObservableCollection<ChipOption> PriorityOptions { get; }
+
+    public ObservableCollection<ChipOption> CategoryOptions { get; }
+
+    public ObservableCollection<ChipOption> IconOptions { get; }
+
+    [ObservableProperty] private string? itemId;
+    [ObservableProperty] private string? date;
 
     [ObservableProperty]
-    private string description = string.Empty;
+    [NotifyPropertyChangedFor(nameof(SaveButtonText))]
+    private bool isEditMode;
+
+    public string SaveButtonText => IsEditMode ? "Save Changes" : "Create Task";
 
     [ObservableProperty]
-    private DateTime dueDate;
+    [NotifyPropertyChangedFor(nameof(HasNameError))]
+    private string nameError = string.Empty;
 
-    [ObservableProperty]
-    private string priority = "Medium";
+    public bool HasNameError => !string.IsNullOrEmpty(NameError);
 
-    [ObservableProperty]
-    private bool isCompleted;
+    [ObservableProperty] private string taskName = string.Empty;
+    [ObservableProperty] private string description = string.Empty;
+    [ObservableProperty] private DateTime dueDate = DateTime.Today;
+    [ObservableProperty] private TimeSpan startTime;
+    [ObservableProperty] private TimeSpan endTime;
+    [ObservableProperty] private string priority = TodoItem.PriorityMedium;
+    [ObservableProperty] private string category = "General";
+    [ObservableProperty] private string icon = TaskIcons.Default;
+    [ObservableProperty] private bool isPinned;
+    [ObservableProperty] private bool isCompleted;
+    [ObservableProperty] private string notes = string.Empty;
 
-    [ObservableProperty]
-    private string notes = string.Empty;
+    partial void OnTaskNameChanged(string value)
+    {
+        if (!string.IsNullOrWhiteSpace(value)) NameError = string.Empty;
+    }
 
-    [ObservableProperty]
-    private string category = "General";
+    partial void OnPriorityChanged(string value) => SyncChips();
+
+    partial void OnCategoryChanged(string value) => SyncChips();
+
+    partial void OnIconChanged(string value) => SyncChips();
+
+    partial void OnDateChanged(string? value)
+    {
+        if (!IsEditMode && DateTime.TryParse(value, out var d)) DueDate = d.Date;
+    }
+
+    partial void OnItemIdChanged(string? value) => _ = LoadForEditAsync(value);
+
+    private async Task LoadForEditAsync(string? value)
+    {
+        if (!int.TryParse(value, out var id)) return;
+
+        var item = await itemStore.GetItemAsync(id);
+        if (item is null) return;
+
+        editing = item;
+        IsEditMode = true;
+        Title = "Edit Task";
+        TaskName = item.ItemName;
+        Description = item.Description ?? string.Empty;
+        DueDate = item.DueDate ?? DateTime.Today;
+        StartTime = item.StartTime ?? StartTime;
+        EndTime = item.EndTime ?? EndTime;
+        Priority = item.Priority;
+        Category = item.Category;
+        Icon = item.Icon;
+        IsPinned = item.IsPinned;
+        Notes = item.Notes;
+        IsCompleted = item.IsCompleted;
+    }
+
+    private void SyncChips()
+    {
+        foreach (var chip in PriorityOptions) chip.IsSelected = chip.Value == Priority;
+        foreach (var chip in CategoryOptions) chip.IsSelected = chip.Value == Category;
+        foreach (var chip in IconOptions) chip.IsSelected = chip.Value == Icon;
+    }
+
+    [RelayCommand]
+    private void SelectPriority(ChipOption? option)
+    {
+        if (option is not null) Priority = option.Value;
+    }
+
+    [RelayCommand]
+    private void SelectCategory(ChipOption? option)
+    {
+        if (option is not null) Category = option.Value;
+    }
+
+    [RelayCommand]
+    private void SelectIcon(ChipOption? option)
+    {
+        if (option is not null) Icon = option.Value;
+    }
+
+    [RelayCommand]
+    private void TogglePinned() => IsPinned = !IsPinned;
+
+    /// <summary>Quick date shortcuts: parameter is the number of days from today.</summary>
+    [RelayCommand]
+    private void QuickDate(string? daysFromToday)
+    {
+        if (int.TryParse(daysFromToday, out var days))
+        {
+            DueDate = DateTime.Today.AddDays(days);
+        }
+    }
 
     [RelayCommand]
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(TaskName))
         {
-            var window = Application.Current?.Windows != null && Application.Current.Windows.Count > 0 ? Application.Current.Windows[0] : null;
-            var page = window?.Page;
-            if (page != null)
-            {
-                await page.DisplayAlertAsync("Validation", "Task name is required.", "OK");
-            }
-            else
-            {
-                Debug.WriteLine("Task name is required.");
-            }
+            NameError = "Please give your task a name.";
             return;
-        }
-
-        // determine a new id (mock store doesn't auto-assign)
-        int newId = 1;
-        try
-        {
-            var items = await itemStore.GetItemsAsync();
-            if (items != null && items.Any())
-            {
-                newId = items.Max(i => i.IdToDoItem) + 1;
-            }
-        }
-        catch
-        {
-            // ignore and use default id
         }
 
         var item = new TodoItem
         {
-            IdToDoItem = newId,
-            ItemName = TaskName,
-            Description = Description,
+            IdToDoItem = editing?.IdToDoItem ?? 0, // 0 => store assigns a new id
+            ItemName = TaskName.Trim(),
+            Description = Description?.Trim(),
             DueDate = DueDate,
+            StartTime = StartTime,
+            EndTime = EndTime,
             Priority = Priority,
+            Category = Category,
+            Icon = Icon,
+            IsPinned = IsPinned,
             IsCompleted = IsCompleted,
-            Notes = Notes,
-            Category = Category
+            Notes = Notes?.Trim() ?? string.Empty,
+            History = editing?.History.ToList() ?? new()
         };
+        item.AddHistory(IsEditMode ? "Task updated" : "Task created");
 
         try
         {
-            await itemStore.AddItemAsync(item);
-            // Navigate back
-            await Shell.Current.GoToAsync("..", true);
+            IsBusy = true;
+            if (IsEditMode)
+                await itemStore.UpdateItemAsync(item);
+            else
+                await itemStore.AddItemAsync(item);
+
+            await GoBackAsync();
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Failed to save item: {ex.Message}");
-            var window = Application.Current?.Windows != null && Application.Current.Windows.Count > 0 ? Application.Current.Windows[0] : null;
-            var page = window?.Page;
-            if (page != null)
-            {
-                await page.DisplayAlertAsync("Error", "Failed to save task.", "OK");
-            }
-            else
-            {
-                Debug.WriteLine("Failed to save task.");
-            }
+            await AlertAsync("Error", "Failed to save task.");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -107,7 +199,7 @@ public partial class NewToDoViewModel : BaseViewModel
     {
         try
         {
-            await Shell.Current.GoToAsync("..", true);
+            await GoBackAsync();
         }
         catch
         {

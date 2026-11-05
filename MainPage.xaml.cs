@@ -1,37 +1,20 @@
-﻿
-
-namespace ToDoList;
+﻿namespace ToDoList;
 
 public partial class MainPage : ContentPage
 {
-	public MainPage()
+	private readonly MainPageViewModel viewModel;
+
+	public MainPage(MainPageViewModel viewModel)
 	{
 		InitializeComponent();
-		BindingContext = new MainPageViewModel();
+		BindingContext = this.viewModel = viewModel;
 	}
 
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
 
-		try
-		{
-			// initial states
-			HeroCard.Opacity = 0;
-			HeroCard.TranslationY = 30;
-			CtaButton.Scale = 0.9;
-
-			// entrance animations (use non-obsolete async methods)
-			await Task.WhenAll(
-				HeroCard.FadeToAsync(1, 420, Easing.CubicOut),
-				HeroCard.TranslateToAsync(0, 0, 420, Easing.CubicOut)
-			);
-
-			await CtaButton.ScaleToAsync(1, 280, Easing.SpringOut);
-		}
-		catch
-		{
-			// ignore animation errors on unsupported platforms
-		}
+		// Refresh every time we come back (task added / completed / deleted / pinned).
+		await viewModel.RefreshAsync();
 	}
 }

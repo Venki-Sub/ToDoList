@@ -1,80 +1,235 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ToDoList.ViewModels"
+             xmlns:model="clr-namespace:ToDoList.Models"
              x:Class="ToDoList.Views.NewToDoPage"
-             Title="New Task"
-             BackgroundColor="#F3F6FA">
+             x:DataType="vm:NewToDoViewModel"
+             Title="{Binding Title}">
 
-  <ContentPage.Resources>
-    <Style TargetType="Entry" x:Key="InputEntry">
-      <Setter Property="BackgroundColor" Value="White" />
-      <Setter Property="HeightRequest" Value="44" />
-      <Setter Property="Margin" Value="0,6" />
-      <Setter Property="PlaceholderColor" Value="#9A9A9A" />
-    </Style>
-    <Style TargetType="Button" x:Key="PrimaryBtn">
-      <Setter Property="BackgroundColor" Value="#4A90E2" />
-      <Setter Property="TextColor" Value="White" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="Padding" Value="12,10" />
-    </Style>
-  </ContentPage.Resources>
+    <ContentPage.Resources>
+        <Style x:Key="SelectableChip" TargetType="Border" BasedOn="{StaticResource Chip}">
+            <Style.Triggers>
+                <DataTrigger TargetType="Border" Binding="{Binding IsSelected, x:DataType=model:ChipOption}" Value="True">
+                    <Setter Property="BackgroundColor" Value="{StaticResource Sky}" />
+                    <Setter Property="Stroke" Value="{StaticResource SlateBrush}" />
+                    <Setter Property="StrokeThickness" Value="1.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Resources>
 
-  <VerticalStackLayout Padding="16" Spacing="12">
-    <Label Text="Create Task" FontSize="20" FontAttributes="Bold" TextColor="#111" />
+    <ScrollView>
+        <Grid>
+            <!-- ===== Curved gradient header ===== -->
+            <Path Fill="{StaticResource HeaderGradient}" Aspect="Fill" HeightRequest="250" VerticalOptions="Start"
+                  Data="M0,0 L100,0 L100,88 C80,74 40,72 0,100 Z" />
 
-    <Entry Style="{StaticResource InputEntry}" Placeholder="Task name" Text="{Binding TaskName}" />
-    <Editor HeightRequest="120" BackgroundColor="White" Margin="0,6" Text="{Binding Description}" Placeholder="Description (optional)" />
+            <VerticalStackLayout Padding="24,18,24,36" Spacing="22" MaximumWidthRequest="560">
 
-    <Entry Style="{StaticResource InputEntry}" Placeholder="Notes (optional)" Text="{Binding Notes}" />
+                <!-- back + title -->
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Label Text="&#xe5c4;" Style="{StaticResource Icon}" FontSize="30" Padding="0,6,12,6"
+                           SemanticProperties.Description="Back">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Grid.Column="1" Text="{Binding Title}" Style="{StaticResource ScreenTitle}" FontSize="26"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                    <BoxView Grid.Column="2" WidthRequest="42" Color="Transparent" />
+                </Grid>
 
-    <HorizontalStackLayout Spacing="10">
-      <DatePicker Date="{Binding DueDate}" HorizontalOptions="StartAndExpand" />
-      <Picker Title="Priority" SelectedItem="{Binding Priority}" HorizontalOptions="End" WidthRequest="140">
-        <Picker.ItemsSource>
-          <x:Array Type="x:String">
-            <x:String>Low</x:String>
-            <x:String>Medium</x:String>
-            <x:String>High</x:String>
-          </x:Array>
-        </Picker.ItemsSource>
-      </Picker>
-    </HorizontalStackLayout>
+                <!-- illustration preview + picker -->
+                <Border BackgroundColor="{StaticResource Surface}" StrokeShape="RoundRectangle 16" Padding="0,18,0,8" Margin="0,6,0,0">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.2" Radius="16" Offset="0,6" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Pick an illustration" Style="{StaticResource FieldLabel}" Margin="18,0,0,0" />
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding IconOptions}" Spacing="12" Padding="18,4,18,12">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="model:ChipOption">
+                                        <Border WidthRequest="72" HeightRequest="72" StrokeShape="RoundRectangle 14"
+                                                BackgroundColor="{Binding Accent}" StrokeThickness="0" Stroke="{StaticResource SlateBrush}">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="StrokeThickness" Value="2.5" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Image Source="{Binding Icon}" WidthRequest="46" HeightRequest="46" />
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewToDoViewModel}}, Path=SelectIconCommand, x:DataType=vm:NewToDoViewModel}" />
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </VerticalStackLayout>
+                </Border>
 
-    <Picker Title="Category" SelectedItem="{Binding Category}" WidthRequest="200">
-      <Picker.ItemsSource>
-        <x:Array Type="x:String">
-          <x:String>General</x:String>
-          <x:String>Work</x:String>
-          <x:String>Personal</x:String>
-          <x:String>Shopping</x:String>
-          <x:String>Health</x:String>
-        </x:Array>
-      </Picker.ItemsSource>
-    </Picker>
+                <!-- Task name -->
+                <VerticalStackLayout>
+                    <Label Text="Task name" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource InputField}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding HasNameError}" Value="True">
+                                <Setter Property="Stroke" Value="{StaticResource DangerBrush}" />
+                                <Setter Property="StrokeThickness" Value="1.5" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Entry x:Name="NameEntry" Text="{Binding TaskName}" Placeholder="e.g. Cycling Around" FontFamily="Exo2SemiBold" />
+                    </Border>
+                    <Label Text="{Binding NameError}" IsVisible="{Binding HasNameError}" TextColor="{StaticResource Danger}"
+                           FontSize="13" Margin="4,6,0,0" />
+                </VerticalStackLayout>
 
-    <HorizontalStackLayout Spacing="10">
-      <DatePicker Date="{Binding DueDate}" HorizontalOptions="StartAndExpand" />
-      <Picker Title="Priority" SelectedItem="{Binding Priority}" HorizontalOptions="End" WidthRequest="140">
-        <Picker.ItemsSource>
-          <x:Array Type="x:String">
-            <x:String>Low</x:String>
-            <x:String>Medium</x:String>
-            <x:String>High</x:String>
-          </x:Array>
-        </Picker.ItemsSource>
-      </Picker>
-    </HorizontalStackLayout>
+                <!-- Description -->
+                <VerticalStackLayout>
+                    <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource InputField}" Padding="10,6">
+                        <Editor Text="{Binding Description}" Placeholder="Add a few details (optional)" HeightRequest="96" />
+                    </Border>
+                </VerticalStackLayout>
 
-    <HorizontalStackLayout VerticalOptions="Center" Spacing="8">
-      <Label Text="Completed" VerticalOptions="Center" />
-      <Switch IsToggled="{Binding IsCompleted}" />
-    </HorizontalStackLayout>
+                <!-- Date -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Date" Style="{StaticResource FieldLabel}" Margin="2,0,0,0" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Border Style="{StaticResource Chip}" Padding="14,8">
+                            <Label Text="Today" Style="{StaticResource ChipText}" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QuickDateCommand}" CommandParameter="0" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Border Style="{StaticResource Chip}" Padding="14,8">
+                            <Label Text="Tomorrow" Style="{StaticResource ChipText}" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QuickDateCommand}" CommandParameter="1" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Border Style="{StaticResource Chip}" Padding="14,8">
+                            <Label Text="Next week" Style="{StaticResource ChipText}" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QuickDateCommand}" CommandParameter="7" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </HorizontalStackLayout>
+                    <Border Style="{StaticResource InputField}" Padding="14,6">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="&#xe878;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}" />
+                            <DatePicker Grid.Column="1" Date="{Binding DueDate}" Format="ddd, MMM d, yyyy"
+                                        HorizontalOptions="Start" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
 
-    <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
-      <Button Text="Cancel" BackgroundColor="#F0F0F0" TextColor="#333" Command="{Binding CancelCommand}" />
-      <Button Text="Save" Style="{StaticResource PrimaryBtn}" Command="{Binding SaveCommand}" />
-    </HorizontalStackLayout>
-  </VerticalStackLayout>
+                <!-- Time -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+                    <VerticalStackLayout>
+                        <Label Text="Starts" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource InputField}" Padding="14,6">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Label Text="&#xe8b5;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}" />
+                                <TimePicker Grid.Column="1" Time="{Binding StartTime}" HorizontalOptions="Start" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Ends" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource InputField}" Padding="14,6">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Label Text="&#xe8b5;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}" />
+                                <TimePicker Grid.Column="1" Time="{Binding EndTime}" HorizontalOptions="Start" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
 
+                <!-- Priority -->
+                <VerticalStackLayout>
+                    <Label Text="Priority" Style="{StaticResource FieldLabel}" />
+                    <FlexLayout BindableLayout.ItemsSource="{Binding PriorityOptions}" Direction="Row" Wrap="NoWrap" Margin="-6,0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="model:ChipOption">
+                                <Border Style="{StaticResource SelectableChip}" FlexLayout.Grow="1" FlexLayout.Basis="0" Margin="6,0">
+                                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                                        <Ellipse WidthRequest="10" HeightRequest="10" Fill="{Binding Accent}" VerticalOptions="Center" />
+                                        <Label Text="{Binding Value}" Style="{StaticResource ChipText}" />
+                                    </HorizontalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewToDoViewModel}}, Path=SelectPriorityCommand, x:DataType=vm:NewToDoViewModel}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!-- Category -->
+                <VerticalStackLayout>
+                    <Label Text="Category" Style="{StaticResource FieldLabel}" />
+                    <FlexLayout BindableLayout.ItemsSource="{Binding CategoryOptions}" Direction="Row" Wrap="Wrap">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="model:ChipOption">
+                                <Border Style="{StaticResource SelectableChip}" Margin="0,0,10,10">
+                                    <Label Text="{Binding Value}" Style="{StaticResource ChipText}" />
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewToDoViewModel}}, Path=SelectCategoryCommand, x:DataType=vm:NewToDoViewModel}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!-- Notes -->
+                <VerticalStackLayout>
+                    <Label Text="Notes" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource InputField}">
+                        <Entry Text="{Binding Notes}" Placeholder="Anything to remember? (optional)" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Toggles -->
+                <Border Style="{StaticResource SoftCard}" Padding="18,8">
+                    <VerticalStackLayout>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,6">
+                            <Label Text="&#xf10d;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}" />
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Pin to home" FontFamily="Exo2SemiBold" FontSize="16" />
+                                <Label Text="Shows in the Pinned section" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding IsPinned}" VerticalOptions="Center" />
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsEditMode}">
+                            <BoxView HeightRequest="1" Margin="0,4" />
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,6">
+                                <Label Text="&#xe86c;" Style="{StaticResource Icon}" FontSize="22" TextColor="{StaticResource Slate}" />
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="Completed" FontFamily="Exo2SemiBold" FontSize="16" />
+                                    <Label Text="Mark this task as done" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="2" IsToggled="{Binding IsCompleted}" VerticalOptions="Center" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Actions -->
+                <!-- Border clips the gradient button to rounded corners on every platform -->
+                <Border Margin="0,8,0,0" StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.3" Radius="14" Offset="0,6" />
+                    </Border.Shadow>
+                    <Button Text="{Binding SaveButtonText}" Style="{StaticResource GradientButton}" Command="{Binding SaveCommand}" />
+                </Border>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

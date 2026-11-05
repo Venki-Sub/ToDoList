@@ -1,64 +1,62 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
+<ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Modern blue / purple gradient palette inspired by the mockup -->
-    <Color x:Key="GradientStart">#0E1B7A</Color>
-    <Color x:Key="GradientEnd">#5B33E6</Color>
-    <Color x:Key="Primary">#2E5BFF</Color>
-    <Color x:Key="PrimaryDark">#1B3B9A</Color>
-    <Color x:Key="PrimaryDarkText">#E9F0FF</Color>
-    <Color x:Key="Secondary">#96DFF6</Color>
-    <Color x:Key="SecondaryDarkText">#B3E7FF</Color>
-    <Color x:Key="Tertiary">#3A2BFF</Color>
+    <!-- ===== Base ===== -->
+    <Color x:Key="PageBg">#F5F6FA</Color>
+    <Color x:Key="Surface">#FFFFFF</Color>
+    <Color x:Key="Ink">#1E1F2B</Color>
+    <Color x:Key="InkSoft">#5C5F70</Color>
+    <Color x:Key="InkMuted">#9A9DAE</Color>
+    <Color x:Key="Slate">#4A5576</Color>
+    <Color x:Key="Outline">#E3E5EE</Color>
+    <Color x:Key="ShadowColor">#7A82A8</Color>
 
-    <Color x:Key="CardBackground">#0F2A6D</Color>
-    <Color x:Key="CardSurface">#142B66</Color>
-    <Color x:Key="AccentCyan">#00C2FF</Color>
-    <Color x:Key="AccentYellow">#FFD166</Color>
-    <Color x:Key="AccentPink">#FF6BAC</Color>
+    <!-- ===== Pastel card tints ===== -->
+    <Color x:Key="Lavender">#D8DCF2</Color>
+    <Color x:Key="Lilac">#E6DDF8</Color>
+    <Color x:Key="Cream">#F3EEE8</Color>
+    <Color x:Key="Mist">#E9EAEE</Color>
+    <Color x:Key="Blush">#FBEEF5</Color>
+    <Color x:Key="Sky">#DCE6F8</Color>
+    <Color x:Key="HistoryBg">#F1F2F5</Color>
+
+    <!-- ===== Header + CTA gradients ===== -->
+    <Color x:Key="HeaderStart">#B4AEDC</Color>
+    <Color x:Key="HeaderEnd">#A9BAB4</Color>
+    <Color x:Key="CtaStart">#BBA8EA</Color>
+    <Color x:Key="CtaEnd">#9CC9A8</Color>
+
+    <!-- ===== Semantic ===== -->
+    <Color x:Key="Primary">#7B6FD0</Color>
+    <Color x:Key="Success">#4CAF7A</Color>
+    <Color x:Key="Warning">#E9A23B</Color>
+    <Color x:Key="Danger">#E05A5A</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
-    <Color x:Key="Magenta">#D600AA</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#1f1f1f</Color>
 
-    <Color x:Key="Gray100">#E1E1E1</Color>
-    <Color x:Key="Gray200">#C8C8C8</Color>
-    <Color x:Key="Gray300">#ACACAC</Color>
-    <Color x:Key="Gray400">#919191</Color>
-    <Color x:Key="Gray500">#6E6E6E</Color>
-    <Color x:Key="Gray600">#404040</Color>
-    <Color x:Key="Gray900">#212121</Color>
-    <Color x:Key="Gray950">#141414</Color>
+    <!-- ===== Brushes ===== -->
+    <SolidColorBrush x:Key="SlateBrush" Color="{StaticResource Slate}" />
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="OutlineBrush" Color="{StaticResource Outline}" />
+    <SolidColorBrush x:Key="ShadowBrush" Color="{StaticResource ShadowColor}" />
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}" />
 
-    <!-- Brushes -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
-    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
-    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
-    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackground}"/>
-    <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurface}"/>
-    <SolidColorBrush x:Key="AccentCyanBrush" Color="{StaticResource AccentCyan}"/>
-    <SolidColorBrush x:Key="AccentYellowBrush" Color="{StaticResource AccentYellow}"/>
-    <SolidColorBrush x:Key="AccentPinkBrush" Color="{StaticResource AccentPink}"/>
-    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
-    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+    <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0.8">
+        <GradientStop Color="{StaticResource HeaderStart}" Offset="0" />
+        <GradientStop Color="{StaticResource HeaderEnd}" Offset="1" />
+    </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
-    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
-    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
-    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
-    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
-    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
-    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+    <LinearGradientBrush x:Key="CtaGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="{StaticResource CtaStart}" Offset="0" />
+        <GradientStop Color="{StaticResource CtaEnd}" Offset="1" />
+    </LinearGradientBrush>
 
-    <!-- Page background gradient -->
-    <LinearGradientBrush x:Key="AppGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="{StaticResource GradientStart}" Offset="0" />
-        <GradientStop Color="{StaticResource GradientEnd}" Offset="1" />
+    <LinearGradientBrush x:Key="OnboardingGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F4F6F8" Offset="0" />
+        <GradientStop Color="#E9EDF0" Offset="1" />
     </LinearGradientBrush>
 
 </ResourceDictionary>
