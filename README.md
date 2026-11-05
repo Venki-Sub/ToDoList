@@ -2,6 +2,16 @@
 
 A to-do list app built with **.NET MAUI** (.NET 10) using the MVVM pattern, with a soft pastel design (lavender/sage gradients, neumorphic cards, flat illustrations).
 
+## Screenshots
+
+| Welcome | Home | Your Activities |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/1-welcome.png" width="240" alt="Welcome screen" /> | <img src="docs/screenshots/2-home.png" width="240" alt="Home screen" /> | <img src="docs/screenshots/3-details.png" width="240" alt="Task details" /> |
+
+| New Task | All Tasks |
+|:---:|:---:|
+| <img src="docs/screenshots/4-new-task.png" width="240" alt="New task form" /> | <img src="docs/screenshots/5-all-tasks.png" width="240" alt="All tasks list" /> |
+
 ## Features
 
 - **Welcome screen** – illustration + "Get Started" (shown on first launch only)
